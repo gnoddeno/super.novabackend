@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 #from drf_yasg import openapi
 #from drf_yasg.utils import swagger_auto_schema
-from .time_table import loadtable
+from .time_table import loadtable, loadempty
 from .models import User
 from .models import Semester
 import time
@@ -254,3 +254,47 @@ class pet_select(APIView):
 
         except User.DoesNotExist:
             return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class createquiz(APIView):
+    """
+    문제 출제 기능
+    """
+    def get(self, request):
+        data = request.GET
+        title = data.get('title')
+        content = data.get('content')
+        answer = data.get('answer')
+        Quiz.objects.create(title=title, content=content, answer=answer)
+        print(data)
+        return Response({"message": "Quiz created"}, status=status.HTTP_200_OK)
+
+class getempty(APIView):
+    """
+    요일별 공강시간
+    """
+    def get(self, request):
+        # 1 input data
+        data = request.GET
+        user_id = data.get('userId')
+        day = data.get('day')
+
+        # 2 load timetable
+        time_slot_objects = TimeSlot.objects.filter(userid=user_id)
+        if not time_slot_objects.exists():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        time_slot_object = time_slot_objects.first()
+        time_table = time_slot_object.time_table
+
+        day_empty_time = loadempty(day, time_table)
+
+
+        # 3 struct response
+        response = {"empty_time": day_empty_time,
+                    "user_Id": user_id
+                    }
+        print(response)
+
+        # 4 send response
+        return Response(response, status=status.HTTP_200_OK)
+    
