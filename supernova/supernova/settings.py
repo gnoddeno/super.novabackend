@@ -47,8 +47,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django_crontab",
     "supernovaback",
     "corsheaders",
+]
+
+CRONJOBS = [
+    ('0 0 * * 1', 'supernovaback.cron.reset_database_values')
 ]
 
 MIDDLEWARE = [
