@@ -64,11 +64,39 @@ class timetable(APIView):
                     "time_table": time_table,
                     "user_id": user_id
                     }
-        
 
         # 4 send response
         return Response(response, status=status.HTTP_201_CREATED)
-    
+
+class gettimetable(APIView):
+    """
+    유저 정보를 바탕으로 시간표 출력
+    """
+    def get(self, request):
+        # 1 input data
+        data = request.GET
+        user_id = data.get('userid')
+
+        # 2 load timetable
+        time_slot_objects = TimeSlot.objects.filter(userid=user_id)
+        if not time_slot_objects.exists():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        time_slot_object = time_slot_objects.first()
+        time_table = time_slot_object.time_table
+        total_empty_time = time_slot_object.empty_time
+
+        # 3 struct response
+        response = {"empty_time": total_empty_time,
+                    "time_table": time_table,
+                    "user_id": user_id
+                    }
+
+        # 4 send response
+        return Response(response, status=status.HTTP_200_OK)
+
+
+
 '''
 @api_view(['PATCH'])    
 def loadtimetalbe(request):
