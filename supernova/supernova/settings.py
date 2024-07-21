@@ -35,7 +35,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'port-0-super-novabackend-lyo940s2bbe6eb1c.sel5.cloudtype.app'
 ]
-
+CSRF_TRUSTED_ORIGINS = ['https://*.cloudtype.app']
 
 # Application definition
 
