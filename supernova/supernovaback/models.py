@@ -1,9 +1,13 @@
 from django.db import models
 
 class User(models.Model):
-    name = models.CharField(max_length=255,null=True)
-    id = models.IntegerField(primary_key=True)
-    pet = models.ImageField(upload_to='images/')
+    id = models.CharField(max_length=255,primary_key=True)
+    pet_code = models.IntegerField(default=0)
+    pet_xp = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.name
+        return self.id
+
+class Semester(models.Model):
+    year = models.IntegerField(primary_key=True)
+    semester = models.IntegerField()

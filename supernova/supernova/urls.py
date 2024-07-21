@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from supernovaback.views import index,create
+from supernovaback.views import main
+import supernovaback.views as views
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("test/",index),
-    path("create/",create),
+    path("main/", views.main.as_view(), name="main"),
 ]
+
+
