@@ -237,6 +237,9 @@ class timer(APIView):
         except User.DoesNotExist:
             return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
+        except TimeSlot.DoesNotExist:
+            return Response({"message": "TimeSlot not found"}, status=status.HTTP_404_NOT_FOUND)
+
 
 class quiz(APIView):
     def get(self, request):
