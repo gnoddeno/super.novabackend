@@ -16,6 +16,7 @@ from .models import Answer
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from .timer_checker import get_sec_passed
+from .emptycalc import get_weekly_empty_time, get_all_xp_ptg
 import pytz
 
 class main(APIView):
@@ -35,11 +36,7 @@ class main(APIView):
             user_object = User.objects.create(id=user_id)
             is_new_user = True
 
-        time_slot_objects = TimeSlot.objects.filter(userid=user_id)
-        if not time_slot_objects.exists():
-            empty_time = 0
-        else:
-            empty_time = time_slot_objects.first().empty_time
+        empty_time = get_weekly_empty_time(user_id)
         # 3 load semester data
         try:
             semester_object = Semester.objects.first()
@@ -48,10 +45,7 @@ class main(APIView):
         except ObjectDoesNotExist:
             return Response({"error": "Semester data not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        ptg = 0
-        if empty_time > 0:
-            ptg = (user_object.pet_xp / (empty_time*5*60*15))* 100
-
+        ptg = get_all_xp_ptg(user_object)
 
 
         # 4 struct response
@@ -182,11 +176,15 @@ class stop_timer(APIView):
                 user_object.pet_xp = 374400
             user_object.timer_sum += time_added
 
+            ptg = get_all_xp_ptg(user_object)
+            added_ptg = ptg - user_object.pet_ptg
+            user_object.pet_ptg = ptg
+
             # 5 save user object
             user_object.save()
 
             # 6 send response
-            return Response({"message": "Timer stopped"}, status=status.HTTP_200_OK)
+            return Response({"added_ptg": added_ptg}, status=status.HTTP_200_OK)
 
         except User.DoesNotExist:
             return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
