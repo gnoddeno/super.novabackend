@@ -61,14 +61,17 @@ class timetable(APIView):
     """
     시간표 정보를 받아와서 저장
     """
-    def get(self, request):
+    def post(self, request):
         # 1 input data
-        data = request.GET
+        data = request.data
         user_id = data.get('userId')
         path = data.get('path')
         # 2 load timetable
-        if aleady_exist := TimeSlot.objects.filter(userid=user_id).exists():
-            TimeSlot.objects.filter(userid=user_id).delete()
+        # if aleady_exist := TimeSlot.objects.filter(userid=user_id).exists():
+        #     TimeSlot.objects.filter(userid=user_id).delete()
+        if TimeSlot.objects.filter(userid=user_id).exists():
+            return Response({"message": "Time table already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
         time_table, total_empty_time = loadtable(path)
         TimeSlot.objects.create(userid=user_id, time_table=time_table, empty_time=total_empty_time)
         print(TimeSlot.objects.all().values())
@@ -240,6 +243,8 @@ class quiz(APIView):
         try:
             # 1 get quiz object
             quiz_object = Quiz.objects.first()
+            if quiz_object is None:
+                return Response({"message": "No Quiz Found"}, status=status.HTTP_404_NOT_FOUND)
 
             # 2 send response
             return Response({"title": quiz_object.title,
@@ -307,8 +312,8 @@ class createquiz(APIView):
     """
     문제 출제 기능
     """
-    def get(self, request):
-        data = request.GET
+    def post(self, request):
+        data = request.data
         title = data.get('title')
         content = data.get('content')
         answer = data.get('answer')
