@@ -10,34 +10,43 @@ from .models import Semester
 import time
 from .models import TimeSlot
 from .models import Quiz
+from .models import Answer
+from django.core.exceptions import ObjectDoesNotExist
 
 class main(APIView):
     def get(self, request):
-
         # 1 input data
         data = request.GET
         user_id = data.get('userId')
         is_new_user = False
 
         # 2 check userId exists
-        user_objects = User.objects.filter(id=user_id)
-        if not user_objects.exists():
-            User.objects.create(id=user_id)
+        try:
+            user_object = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            if "@" not in user_id:
+                return Response({"error": "userId not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+            user_object = User.objects.create(id=user_id)
             is_new_user = True
 
-
         # 3 load semester data
-        semester_object = Semester.objects.first()
+        try:
+            semester_object = Semester.objects.first()
+            if semester_object is None:
+                return Response({"error": "Semester data not found"}, status=status.HTTP_404_NOT_FOUND)
+        except ObjectDoesNotExist:
+            return Response({"error": "Semester data not found"}, status=status.HTTP_404_NOT_FOUND)
 
         # 4 struct response
         print(user_id)
-        user_object = User.objects.get(id=user_id)
-        response = {"pet_code": user_object.pet_code,
-                    "pet_xp": user_object.pet_xp,
-                    "is_new_user": is_new_user,
-                    "year_info": semester_object.year,
-                    "semester_info": semester_object.semester
-                    }
+        response = {
+            "pet_code": user_object.pet_code,
+            "pet_xp": user_object.pet_xp,
+            "is_new_user": is_new_user,
+            "year_info": semester_object.year,
+            "semester_info": semester_object.semester
+        }
 
         # 5 send response
         return Response(response, status=status.HTTP_200_OK)
@@ -192,3 +201,56 @@ class quiz(APIView):
 
         except Quiz.DoesNotExist:
             return Response({"message": "No Quiz Found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class submit(APIView):
+    def post(self, request):
+        try:
+            # 1 get user from request
+            data = request.data
+            user_id = data.get('userId')
+            answer = data.get('answer')
+
+            # 2 get current quiz object
+            quiz_object = Quiz.objects.first()
+
+            # 3 create answer object for above quiz
+            Answer.objects.create(user_id=user_id, quiz_id=quiz_object.id)
+
+            # 4 return response do not check answer
+            return Response({"message": "Answer submitted"}, status=status.HTTP_200_OK)
+
+        except Quiz.DoesNotExist:
+            return Response({"message": "No Quiz found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class pet_select(APIView):
+    def post(self, request):
+        try:
+            # 1 get user from request
+            data = request.data
+            user_id = data.get('userId')
+            pet_code = data.get('pet_code')
+
+            # 2 get user object
+            user_object = User.objects.get(id=user_id)
+
+            # 3 check pet code is initial value
+            if user_object.pet_code > 0:
+                response = {"change_valid": False}
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+            # 4 check pet code is valid
+            if pet_code < 1 or pet_code > 4:
+                response = {"change_valid": False}
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+            # 5 update pet code
+            user_object.pet_code = pet_code
+            user_object.save()
+
+            # 6 send response
+            return Response({"message": "Pet code updated"}, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)

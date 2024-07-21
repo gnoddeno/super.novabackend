@@ -1,9 +1,9 @@
 from django.db import models
 import json
-import json
+
 
 class User(models.Model):
-    id = models.CharField(max_length=255,primary_key=True)
+    id = models.CharField(max_length=255, primary_key=True)
     pet_code = models.IntegerField(default=0)
     pet_xp = models.IntegerField(default=0)
     timer_recent = models.IntegerField(null=True)
@@ -12,9 +12,11 @@ class User(models.Model):
     def __str__(self):
         return self.id
 
+
 class Semester(models.Model):
     year = models.IntegerField(primary_key=True)
     semester = models.IntegerField()
+
 
 class TimeSlot(models.Model):
     userid = models.CharField(max_length=255, primary_key=True)
@@ -25,8 +27,15 @@ class TimeSlot(models.Model):
         self.time_table = json.dumps(self.time_table)
         super().save(*args, **kwargs)
 
+
 class Quiz(models.Model):
     id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=255)
     content = models.CharField(max_length=255)
     answer = models.CharField(max_length=255)
+
+
+class Answer(models.Model):
+    id = models.IntegerField(primary_key=True)
+    user_id = models.CharField(max_length=255)
+    quiz_id = models.IntegerField()

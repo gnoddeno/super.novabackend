@@ -27,6 +27,8 @@ urlpatterns = [
     path("stop_timer/", views.stop_timer.as_view(), name="stop_timer"),
     path("timer/", views.timer.as_view(), name="get_timer"),
     path("quiz/", views.quiz.as_view(), name="quiz"),
+    path("submit/", views.submit.as_view(), name="submit"),
+    path("pet_select/", views.pet_select.as_view(), name="pet_select"),
 
 ]
 
