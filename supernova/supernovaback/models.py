@@ -10,6 +10,7 @@ class User(models.Model):
     timer_recent = models.IntegerField(null=True)
     timer_on = models.BooleanField(default=False)
     timer_sum = models.IntegerField(default=0)
+    
 
     def __str__(self):
         return self.id
@@ -41,3 +42,11 @@ class Answer(models.Model):
     id = models.IntegerField(primary_key=True)
     user_id = models.CharField(max_length=255)
     quiz_id = models.IntegerField()
+
+class Category(models.Model):
+    read = models.IntegerField(default=0)
+    walk = models.IntegerField(default=0)
+    movie = models.IntegerField(default=0)
+    workout = models.IntegerField(default=0)
+    study = models.IntegerField(default=0)
+    sleep = models.IntegerField(default=0)

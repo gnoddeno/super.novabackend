@@ -32,6 +32,8 @@ urlpatterns = [
     path("submit/", views.submit.as_view(), name="submit"),
     path("pet_select/", views.pet_select.as_view(), name="pet_select"),
     path("top10/", views.top10.as_view(), name="top10"),
+    path("category/", views.choiceCategory.as_view(), name="category"),
+    path("rankcategory/", views.rankCategory.as_view(), name="rankcategory"),
 ]
 
 

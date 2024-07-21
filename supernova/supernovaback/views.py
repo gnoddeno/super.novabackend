@@ -4,15 +4,12 @@ from rest_framework import viewsets, permissions, generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+from django.db.models import F
 #from drf_yasg import openapi
 #from drf_yasg.utils import swagger_auto_schema
 from .time_table import loadtable, loadempty
-from .models import User
-from .models import Semester
+from .models import User, Semester, TimeSlot, Quiz, Answer, Category
 import time
-from .models import TimeSlot
-from .models import Quiz
-from .models import Answer
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from .timer_checker import get_sec_passed
@@ -385,3 +382,43 @@ class getempty(APIView):
         # 4 send response
         return Response(response, status=status.HTTP_200_OK)
     
+class choiceCategory(APIView):
+    def patch(self, request):
+        data = request.data
+        choice_data = data.get('category')
+        if Category.objects.count() == 0:
+            Category.objects.create()
+        category_instance = Category.objects.first()
+        if choice_data =="read":
+            category_instance.read += 1
+        elif choice_data =="walk":
+            category_instance.walk += 1
+        elif choice_data =="movie":
+            category_instance.movie += 1
+        elif choice_data =="workout":
+            category_instance.workout += 1  
+        elif choice_data =="study":
+            category_instance.study += 1    
+        elif choice_data =="sleep":
+            category_instance.sleep += 1
+        else:
+            return Response({"message": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+        category_instance.save()
+        return Response({"message": "Category updated"}, status=status.HTTP_200_OK)
+
+    
+class rankCategory(APIView):
+    def get(self, request):
+        if Category.objects.count() == 0:
+            return Response({"message": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+        category_instance = Category.objects.first()
+        response = {
+            "read": category_instance.read,
+            "walk": category_instance.walk,
+            "movie": category_instance.movie,
+            "workout": category_instance.workout,
+            "study": category_instance.study,
+            "sleep": category_instance.sleep
+        }
+        sorted_response = dict(sorted(response.items(), key=lambda item: item[1], reverse=True))
+        return Response(sorted_response, status=status.HTTP_200_OK)
