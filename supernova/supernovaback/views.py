@@ -36,7 +36,7 @@ class main(APIView):
             is_new_user = True
 
         time_slot_objects = TimeSlot.objects.filter(userid=user_id)
-        if not time_slot_objects.exists(): 
+        if not time_slot_objects.exists():
             empty_time = 0
         empty_time = time_slot_objects.first().empty_time
         # 3 load semester data
@@ -55,7 +55,8 @@ class main(APIView):
             "is_new_user": is_new_user,
             "year_info": semester_object.year,
             "semester_info": semester_object.semester,
-            "empty_time": empty_time
+            "empty_time": empty_time,
+            "timer_sum": user_object.timer_sum
         }
 
         # 5 send response
@@ -168,7 +169,11 @@ class stop_timer(APIView):
 
             # 4 stop timer
             user_object.timer_on = False
-            user_object.pet_xp += int(time.time()) - user_object.timer_recent
+            time_added = int(time.time()) - user_object.timer_recent
+            user_object.pet_xp += time_added
+            if user_object.pet_xp >= 374400:
+                user_object.pet_xp = 374400
+            user_object.timer_sum += time_added
 
             # 5 save user object
             user_object.save()
@@ -248,16 +253,19 @@ class timer(APIView):
 
 class quiz(APIView):
     def get(self, request):
+        try:
             # 1 get quiz object
-        quiz_object = Quiz.objects.first()
+            quiz_object = Quiz.objects.first()
+            if quiz_object is None:
+                return Response({"message": "No Quiz Found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if quiz_object is None:
-            return Response({"message": "No Quiz Found"}, status=status.HTTP_404_NOT_FOUND)
             # 2 send response
-        return Response({"title": quiz_object.title,
-                         "content": quiz_object.content
-                         }, status=status.HTTP_200_OK)
+            return Response({"title": quiz_object.title,
+                             "content": quiz_object.content
+                             }, status=status.HTTP_200_OK)
 
+        except Quiz.DoesNotExist:
+            return Response({"message": "No Quiz Found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class submit(APIView):

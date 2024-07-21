@@ -8,6 +8,7 @@ class User(models.Model):
     pet_xp = models.IntegerField(default=0)
     timer_recent = models.IntegerField(null=True)
     timer_on = models.BooleanField(default=False)
+    timer_sum = models.IntegerField(default=0)
 
     def __str__(self):
         return self.id
