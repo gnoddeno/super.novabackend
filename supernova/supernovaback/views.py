@@ -50,18 +50,18 @@ class timetable(APIView):
     def get(self, request):
         # 1 input data
         data = request.GET
-        user_id = data.get('userid')
+        user_id = data.get('userId')
         path = data.get('path')
-        print(path)
         # 2 load timetable
+        if aleady_exist := TimeSlot.objects.filter(userid=user_id).exists():
+            TimeSlot.objects.filter(userid=user_id).delete()
         time_table, total_empty_time = loadtable(path)
         TimeSlot.objects.create(userid=user_id, time_table=time_table, empty_time=total_empty_time)
         print(TimeSlot.objects.all().values())
 
         # 3 struct response
         response = {"empty_time": total_empty_time,
-                    "time_table": time_table,
-                    "user_id": user_id
+                    "user_Id": user_id
                     }
 
         # 4 send response
@@ -74,7 +74,7 @@ class gettimetable(APIView):
     def get(self, request):
         # 1 input data
         data = request.GET
-        user_id = data.get('userid')
+        user_id = data.get('userId')
 
         # 2 load timetable
         time_slot_objects = TimeSlot.objects.filter(userid=user_id)
@@ -85,31 +85,18 @@ class gettimetable(APIView):
         time_table = time_slot_object.time_table
         total_empty_time = time_slot_object.empty_time
 
+
         # 3 struct response
         response = {"empty_time": total_empty_time,
                     "time_table": time_table,
-                    "user_id": user_id
+                    "user_Id": user_id
                     }
+        print(response)
 
         # 4 send response
         return Response(response, status=status.HTTP_200_OK)
 
 
-
-'''
-@api_view(['PATCH'])    
-def loadtimetalbe(request):
-    if request.method == 'PATCH':
-        userid = request.data.get('userid')
-        path = request.data.get('path')
-        time_table, total_empty_time = loadtalbe(path)
-        TimeSlot.objects.create(userid=userid, time_table=time_table, empty_time=total_empty_time)
-        if total_empty_time > 0:
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_200_OK)
-    else:
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-'''
 class start_timer(APIView):
     def post(self, request):
         try:

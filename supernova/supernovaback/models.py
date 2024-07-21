@@ -1,5 +1,6 @@
 from django.db import models
 import json
+import json
 
 class User(models.Model):
     id = models.CharField(max_length=255,primary_key=True)
@@ -16,7 +17,7 @@ class Semester(models.Model):
     semester = models.IntegerField()
 
 class TimeSlot(models.Model):
-    userid = models.CharField(max_length=100, null=True, blank=True)
+    userid = models.CharField(max_length=255, primary_key=True)
     time_table = models.JSONField()
     empty_time = models.IntegerField()  # 0 to 287 (representing 5-minute intervals from 00:00 to 23:55)
 
