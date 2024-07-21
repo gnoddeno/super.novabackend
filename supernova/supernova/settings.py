@@ -139,6 +139,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'https://web-supernovafront-lyo8s04u46617839.sel5.cloudtype.app/*'
+    'https://web-supernovafront-lyo8s04u46617839.sel5.cloudtype.app'
 ]
 CORS_ALLOW_CREDENTIALS = True
