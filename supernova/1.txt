@@ -1,1 +1,0 @@
-SECRET_KEY="django-insecure-vg+ved05+r(m%xx(%j$+3m6s5*&rgs4+qdeqrqy@+1+obgj)6&"

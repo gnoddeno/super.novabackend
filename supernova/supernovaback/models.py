@@ -12,11 +12,11 @@ class User(models.Model):
 class Semester(models.Model):
     year = models.IntegerField(primary_key=True)
     semester = models.IntegerField()
-    
+
 class TimeSlot(models.Model):
-    userid = models.CharField(primary_key=True,max_length=255)
+    userid = models.CharField(max_length=100, null=True, blank=True)
     time_table = models.JSONField()
-    empty_time = models.IntegerField(max_length=100)  # 0 to 287 (representing 5-minute intervals from 00:00 to 23:55)
+    empty_time = models.IntegerField()  # 0 to 287 (representing 5-minute intervals from 00:00 to 23:55)
 
     def save(self, *args, **kwargs):
         self.time_table = json.dumps(self.time_table)

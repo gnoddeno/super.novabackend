@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "supernovaback",
-    'rest_framework',
 ]
 
 MIDDLEWARE = [

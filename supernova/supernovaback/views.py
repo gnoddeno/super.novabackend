@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 #from drf_yasg import openapi
 #from drf_yasg.utils import swagger_auto_schema
-from .time_talbe import loadtalbe
+from .time_table import loadtable
 from .models import User
 from .models import Semester
 from .models import TimeSlot
@@ -43,6 +43,33 @@ class main(APIView):
         # 5 send response
         return Response(response, status=status.HTTP_200_OK)
     
+
+class timetable(APIView):
+    """
+    시간표 정보를 받아와서 저장
+    """
+    def get(self, request):
+        # 1 input data
+        data = request.GET
+        user_id = data.get('userid')
+        path = data.get('path')
+        print(path)
+        # 2 load timetable
+        time_table, total_empty_time = loadtable(path)
+        TimeSlot.objects.create(userid=user_id, time_table=time_table, empty_time=total_empty_time)
+        print(TimeSlot.objects.all().values())
+
+        # 3 struct response
+        response = {"empty_time": total_empty_time,
+                    "time_table": time_table,
+                    "user_id": user_id
+                    }
+        
+
+        # 4 send response
+        return Response(response, status=status.HTTP_201_CREATED)
+    
+'''
 @api_view(['PATCH'])    
 def loadtimetalbe(request):
     if request.method == 'PATCH':
@@ -55,3 +82,4 @@ def loadtimetalbe(request):
         return Response(status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+'''
