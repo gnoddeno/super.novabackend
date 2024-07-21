@@ -31,6 +31,7 @@ urlpatterns = [
     path("createquiz/", views.createquiz.as_view(), name="createquiz"),
     path("submit/", views.submit.as_view(), name="submit"),
     path("pet_select/", views.pet_select.as_view(), name="pet_select"),
+    path("top10/", views.top10.as_view(), name="top10"),
 ]
 
 
