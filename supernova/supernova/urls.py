@@ -16,14 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from supernovaback.views import main, timetable,gettimetable
+from supernovaback.views import main
 import supernovaback.views as views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("main/", views.main.as_view(), name="main"),
-    path("loadtimetable/",views.timetable.as_view(), name="loadtimetable"),
-    path("gettimetable/",views.gettimetable.as_view(), name="gettimetable")
-    
+    path("loadtimetable/", views.timetable.as_view(), name="loadtimetable"),
+    path("gettimetable/", views.gettimetable.as_view(), name="gettimetable"),
+    path("start_timer/", views.start_timer.as_view(), name="start_timer"),
+    path("stop_timer/", views.stop_timer.as_view(), name="stop_timer"),
+    path("timer/", views.timer.as_view(), name="get_timer"),
+    path("quiz/", views.quiz.as_view(), name="quiz"),
+
 ]
 
 
