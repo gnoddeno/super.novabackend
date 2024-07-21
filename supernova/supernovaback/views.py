@@ -38,7 +38,8 @@ class main(APIView):
         time_slot_objects = TimeSlot.objects.filter(userid=user_id)
         if not time_slot_objects.exists():
             empty_time = 0
-        empty_time = time_slot_objects.first().empty_time
+        else:
+            empty_time = time_slot_objects.first().empty_time
         # 3 load semester data
         try:
             semester_object = Semester.objects.first()
@@ -46,12 +47,18 @@ class main(APIView):
                 return Response({"error": "Semester data not found"}, status=status.HTTP_404_NOT_FOUND)
         except ObjectDoesNotExist:
             return Response({"error": "Semester data not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        ptg = 0
+        if empty_time > 0:
+            ptg = (user_object.pet_xp / (empty_time*5*60*15))* 100
+
+
 
         # 4 struct response
-        print(user_id)
         response = {
             "pet_code": user_object.pet_code,
             "pet_xp": user_object.pet_xp,
+            "pet_ptg": ptg,
             "is_new_user": is_new_user,
             "year_info": semester_object.year,
             "semester_info": semester_object.semester,
