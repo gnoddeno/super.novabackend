@@ -341,6 +341,20 @@ class createquiz(APIView):
         print(data)
         return Response({"message": "Quiz created"}, status=status.HTTP_200_OK)
 
+class top10(APIView):
+    """
+    상위 10명의 유저 정보 출력
+    """
+    def get(self, request):
+        user_objects = User.objects.all().order_by('-pet_ptg')[:10]
+        response = []
+        for user_object in user_objects:
+            response.append({"user_id": user_object.id,
+                             "pet_ptg": user_object.pet_ptg
+                             })
+        return Response(response, status=status.HTTP_200_OK)
+
+
 class getempty(APIView):
     """
     요일별 공강시간
