@@ -5,6 +5,8 @@ from pytz import timezone
 def get_sec_passed(user_object, today_time_table):
     dt_seoul = datetime.now(timezone('Asia/Seoul'))
     start_time = user_object.timer_recent
+    if start_time is None:
+        return 0
     midnight = dt_seoul.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
     examined_time = int(midnight)
     prev_flag = 0
