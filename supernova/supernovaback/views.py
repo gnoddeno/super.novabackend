@@ -7,12 +7,11 @@ from rest_framework.decorators import api_view
 from .time_table import loadtable
 from .models import User
 from .models import Semester
+import time
 from .models import TimeSlot
+from .models import Quiz
 
 class main(APIView):
-    """
-    스테이지 생성 후 스테이지 ID 반환
-    """
     def get(self, request):
 
         # 1 input data
@@ -42,7 +41,7 @@ class main(APIView):
 
         # 5 send response
         return Response(response, status=status.HTTP_200_OK)
-    
+
 
 class timetable(APIView):
     """
@@ -111,3 +110,98 @@ def loadtimetalbe(request):
     else:
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 '''
+class start_timer(APIView):
+    def post(self, request):
+        try:
+            # 1 get user from request
+            data = request.data
+            user_id = data.get('userId')
+
+            # 2 get user object
+            user_object = User.objects.get(id=user_id)
+
+            # 3 check timer is already on
+            if user_object.timer_on:
+                response = {"message": "Timer is already on"}
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+            # 4 start timer
+            user_object.timer_on = True
+            user_object.timer_recent = int(time.time())
+
+            # 5 save user object
+            user_object.save()
+
+            # 6 send response
+            return Response({"message": "Timer started"}, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class stop_timer(APIView):
+    def post(self, request):
+        try:
+            # 1 get user from request
+            data = request.data
+            user_id = data.get('userId')
+
+            # 2 get user object
+            user_object = User.objects.get(id=user_id)
+
+            # 3 check timer is already off
+            if not user_object.timer_on:
+                response = {"message": "Timer is already off"}
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+            # 4 stop timer
+            user_object.timer_on = False
+            user_object.pet_xp += int(time.time()) - user_object.timer_recent
+
+            # 5 save user object
+            user_object.save()
+
+            # 6 send response
+            return Response({"message": "Timer stopped"}, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class timer(APIView):
+    def get(self, request):
+        try:
+            # 1 get user from request
+            data = request.GET
+            user_id = data.get('userId')
+
+            # 2 get user object
+            user_object = User.objects.get(id=user_id)
+
+            # 3 check timer is on
+            if not user_object.timer_on:
+                return Response({"remaining_time": 0}, status=status.HTTP_200_OK)
+
+            # 4 calculate remaining time
+            time_passed = int(time.time()) - user_object.timer_recent
+
+            # 5 send response
+            return Response({"time_passed": time_passed}, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class quiz(APIView):
+    def get(self, request):
+        try:
+            # 1 get quiz object
+            quiz_object = Quiz.objects.first()
+
+            # 2 send response
+            return Response({"title": quiz_object.title,
+                             "content": quiz_object.content,
+                             "answer": quiz_object.answer
+                             }, status=status.HTTP_200_OK)
+
+        except Quiz.DoesNotExist:
+            return Response({"message": "No Quiz Found"}, status=status.HTTP_404_NOT_FOUND)

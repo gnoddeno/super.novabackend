@@ -5,6 +5,8 @@ class User(models.Model):
     id = models.CharField(max_length=255,primary_key=True)
     pet_code = models.IntegerField(default=0)
     pet_xp = models.IntegerField(default=0)
+    timer_recent = models.IntegerField(null=True)
+    timer_on = models.BooleanField(default=False)
 
     def __str__(self):
         return self.id
@@ -21,3 +23,9 @@ class TimeSlot(models.Model):
     def save(self, *args, **kwargs):
         self.time_table = json.dumps(self.time_table)
         super().save(*args, **kwargs)
+
+class Quiz(models.Model):
+    id = models.IntegerField(primary_key=True)
+    title = models.CharField(max_length=255)
+    content = models.CharField(max_length=255)
+    answer = models.CharField(max_length=255)
