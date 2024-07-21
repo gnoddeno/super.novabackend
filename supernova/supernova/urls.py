@@ -23,13 +23,14 @@ urlpatterns = [
     path("main/", views.main.as_view(), name="main"),
     path("loadtimetable/", views.timetable.as_view(), name="loadtimetable"),
     path("gettimetable/", views.gettimetable.as_view(), name="gettimetable"),
+    path("getempty/", views.getempty.as_view(), name="getempty"),
     path("start_timer/", views.start_timer.as_view(), name="start_timer"),
     path("stop_timer/", views.stop_timer.as_view(), name="stop_timer"),
     path("timer/", views.timer.as_view(), name="get_timer"),
     path("quiz/", views.quiz.as_view(), name="quiz"),
+    path("createquiz/", views.createquiz.as_view(), name="createquiz"),
     path("submit/", views.submit.as_view(), name="submit"),
     path("pet_select/", views.pet_select.as_view(), name="pet_select"),
-
 ]
 
 
