@@ -251,8 +251,7 @@ class quiz(APIView):
 
             # 2 send response
             return Response({"title": quiz_object.title,
-                             "content": quiz_object.content,
-                             "answer": quiz_object.answer
+                             "content": quiz_object.content
                              }, status=status.HTTP_200_OK)
 
         except Quiz.DoesNotExist:
@@ -273,8 +272,11 @@ class submit(APIView):
             # 3 create answer object for above quiz
             Answer.objects.create(user_id=user_id, quiz_id=quiz_object.id)
 
-            # 4 return response do not check answer
-            return Response({"message": "Answer submitted"}, status=status.HTTP_200_OK)
+            # 4 return response check answer is correct
+            if answer == quiz_object.answer:
+                return Response({"is_correct": True}, status=status.HTTP_200_OK)
+            else:
+                return Response({"is_correct": False}, status=status.HTTP_200_OK)
 
         except Quiz.DoesNotExist:
             return Response({"message": "No Quiz found"}, status=status.HTTP_404_NOT_FOUND)
