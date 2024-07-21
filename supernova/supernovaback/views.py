@@ -35,6 +35,10 @@ class main(APIView):
             user_object = User.objects.create(id=user_id)
             is_new_user = True
 
+        time_slot_objects = TimeSlot.objects.filter(userid=user_id)
+        if not time_slot_objects.exists(): 
+            empty_time = 0
+        empty_time = time_slot_objects.first().empty_time
         # 3 load semester data
         try:
             semester_object = Semester.objects.first()
@@ -50,7 +54,8 @@ class main(APIView):
             "pet_xp": user_object.pet_xp,
             "is_new_user": is_new_user,
             "year_info": semester_object.year,
-            "semester_info": semester_object.semester
+            "semester_info": semester_object.semester,
+            "empty_time": empty_time
         }
 
         # 5 send response
@@ -243,19 +248,16 @@ class timer(APIView):
 
 class quiz(APIView):
     def get(self, request):
-        try:
             # 1 get quiz object
-            quiz_object = Quiz.objects.first()
-            if quiz_object is None:
-                return Response({"message": "No Quiz Found"}, status=status.HTTP_404_NOT_FOUND)
+        quiz_object = Quiz.objects.first()
 
-            # 2 send response
-            return Response({"title": quiz_object.title,
-                             "content": quiz_object.content
-                             }, status=status.HTTP_200_OK)
-
-        except Quiz.DoesNotExist:
+        if quiz_object is None:
             return Response({"message": "No Quiz Found"}, status=status.HTTP_404_NOT_FOUND)
+            # 2 send response
+        return Response({"title": quiz_object.title,
+                         "content": quiz_object.content
+                         }, status=status.HTTP_200_OK)
+
 
 
 class submit(APIView):
