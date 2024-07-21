@@ -4,8 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 #from drf_yasg import openapi
 #from drf_yasg.utils import swagger_auto_schema
+from .time_talbe import loadtalbe
 from .models import User
 from .models import Semester
+from .models import TimeSlot
 
 class main(APIView):
     """
@@ -40,4 +42,16 @@ class main(APIView):
 
         # 5 send response
         return Response(response, status=status.HTTP_200_OK)
-
+    
+@api_view(['PATCH'])    
+def loadtimetalbe(request):
+    if request.method == 'PATCH':
+        userid = request.data.get('userid')
+        path = request.data.get('path')
+        time_table, total_empty_time = loadtalbe(path)
+        TimeSlot.objects.create(userid=userid, time_table=time_table, empty_time=total_empty_time)
+        if total_empty_time > 0:
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
