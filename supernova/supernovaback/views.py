@@ -334,6 +334,9 @@ class createquiz(APIView):
         title = data.get('title')
         content = data.get('content')
         answer = data.get('answer')
+        password = data.get('password')
+        if password != Semester.objects.first().password:
+            return Response({"message": "Password not correct"}, status=status.HTTP_400_BAD_REQUEST)
         Quiz.objects.create(title=title, content=content, answer=answer)
         print(data)
         return Response({"message": "Quiz created"}, status=status.HTTP_200_OK)

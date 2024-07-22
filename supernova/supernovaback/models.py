@@ -19,6 +19,7 @@ class User(models.Model):
 class Semester(models.Model):
     year = models.IntegerField(primary_key=True)
     semester = models.IntegerField()
+    password = models.CharField(max_length=255)
 
 
 class TimeSlot(models.Model):
