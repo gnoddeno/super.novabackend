@@ -392,20 +392,22 @@ class choiceCategory(APIView):
         if Category.objects.count() == 0:
             Category.objects.create()
         category_instance = Category.objects.first()
-        if choice_data =="read":
-            category_instance.read += 1
-        elif choice_data =="walk":
-            category_instance.walk += 1
-        elif choice_data =="movie":
-            category_instance.movie += 1
-        elif choice_data =="workout":
-            category_instance.workout += 1  
-        elif choice_data =="study":
-            category_instance.study += 1    
-        elif choice_data =="sleep":
-            category_instance.sleep += 1
-        else:
-            return Response({"message": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+        choice_datas = choice_data.split("|")
+        for choice in choice_datas:
+            if choice =="read":
+                category_instance.read += 1
+            elif choice =="walk":
+                category_instance.walk += 1
+            elif choice =="movie":
+                category_instance.movie += 1
+            elif choice =="workout":
+                category_instance.workout += 1  
+            elif choice =="study":
+                category_instance.study += 1    
+            elif choice =="sleep":
+                category_instance.sleep += 1
+            else:
+                return Response({"message": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
         category_instance.save()
         return Response({"message": "Category updated"}, status=status.HTTP_200_OK)
 

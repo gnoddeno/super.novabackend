@@ -33,7 +33,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'port-0-super-novabackend-lyo940s2bbe6eb1c.sel5.cloudtype.app'
+    'port-0-super-novabackend-lyo940s2bbe6eb1c.sel5.cloudtype.app',
 ]
 CSRF_TRUSTED_ORIGINS = ['https://*.cloudtype.app']
 
@@ -104,9 +104,11 @@ WSGI_APPLICATION = "supernova.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR/"db.sqlite3",
     }
 }
+
+
 
 
 # Password validation
