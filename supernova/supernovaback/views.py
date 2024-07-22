@@ -164,10 +164,45 @@ class stop_timer(APIView):
             if not user_object.timer_on:
                 response = {"message": "Timer is already off"}
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            
+            # 3 get korean utc time
+            now_utc = datetime.now(pytz.utc)
+            now_seoul = now_utc.astimezone(pytz.timezone('Asia/Seoul'))
+            weekday = now_seoul.weekday()
+            formatted_time = now_seoul.strftime("%H:%M:%S")
+            print(f"현재 한국 시간: {formatted_time}")
+            print(f"오늘의 요일(정수): {weekday}")
+            
+            # 4 get timetable
+            time_slot_object = TimeSlot.objects.get(userid=user_id)
+            time_table = time_slot_object.time_table
+
+            if isinstance(time_table, str):
+                schedule = json.loads(time_table)
+            else:
+                schedule = time_table
+            today_time_table = schedule[weekday]
+
+
+            # 5 get number of "0" between first "1" and last "1"
+            sum_empty_time = 0
+            continuous_empty_time = 0
+            arrived_school = False
+            for i in range(len(today_time_table)):
+
+                if today_time_table[i] == 1:
+                    arrived_school = True
+                    if continuous_empty_time > 0:
+                        sum_empty_time += continuous_empty_time
+                        continuous_empty_time = 0
+                elif today_time_table[i] == 0 and arrived_school:
+                    continuous_empty_time += 5
+
+            today_total_min = sum_empty_time
 
             # 4 stop timer
             user_object.timer_on = False
-            time_added = int(time.time()) - user_object.timer_recent
+            time_added = get_sec_passed(user_object, today_time_table)
             user_object.pet_xp += time_added
             if user_object.pet_xp >= 374400:
                 user_object.pet_xp = 374400
