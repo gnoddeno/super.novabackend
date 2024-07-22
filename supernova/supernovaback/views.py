@@ -415,7 +415,7 @@ class choiceCategory(APIView):
 class rankCategory(APIView):
     def get(self, request):
         if Category.objects.count() == 0:
-            return Response({"message": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+            Category.objects.create()
         category_instance = Category.objects.first()
         response = {
             "read": category_instance.read,
